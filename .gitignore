@@ -1,9 +1,12 @@
 ####################
 # freimguork cache #
 ####################
-src/cache/*
-public/upload/*
-public/static/import/*
+src/cache/dev/*
+src/cache/prod/*
+!src/cache/dev/.gitkeep
+!src/cache/prod/.gitkeep
+web/upload/*
+!web/upload/.gitkeep
 
 ######################
 # OS generated files #
