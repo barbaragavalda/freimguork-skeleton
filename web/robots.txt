@@ -1,5 +1,0 @@
-# robots.txt for https://{{project-domain}}/
-
-User-agent: *
-Crawl-delay: 60
-Sitemap: https://{{project-domain}}/sitemap.xml

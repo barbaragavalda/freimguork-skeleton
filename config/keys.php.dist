@@ -1,7 +1,0 @@
-<?php
-
-// Copy this file to keys.php (gitignored) and fill in real values as the
-// project needs them (API keys, third-party button IDs, etc).
-$config = array(
-
-);

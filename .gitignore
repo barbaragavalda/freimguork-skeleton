@@ -1,10 +1,8 @@
 ####################
 # freimguork cache #
 ####################
-src/cache/dev/*
-src/cache/prod/*
-!src/cache/dev/.gitkeep
-!src/cache/prod/.gitkeep
+src/cache/
+
 web/upload/*
 !web/upload/.gitkeep
 
