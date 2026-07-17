@@ -3,7 +3,29 @@
 Base template for starting a new project on top of `freimguork-core` +
 `freimguork-appacman` (admin panel included).
 
-## How to use it for a new project (e.g. "tv-tracker")
+## Quick start (recommended)
+
+Everything below is automated by `create-project.sh`, in the VM repo's
+`system/scripts/` (see that repo's `README.md`, section 4, for full details):
+
+```bash
+cd system/scripts
+sh create-project.sh <bitbucket|github> <slug> <prod-domain> [project-name] [description]
+```
+
+for example:
+```bash
+sh create-project.sh bitbucket tv-tracker tvtracker.com "TV Tracker" "Track what you're watching"
+```
+
+It creates the repo (Bitbucket or GitHub), the local host/vhost, copies this
+skeleton, fills in every placeholder, fetches the latest jQuery, generates
+DB credentials and encryption secrets, commits and pushes, creates the
+database, imports `db.sql` and runs `composer install`. The only thing it
+leaves manual is creating the first admin user (see below) - that needs a
+real password you choose, encrypted with the project's own generated secret.
+
+## Manual steps (what the script does, for reference/recovery)
 
 1. Copy this folder with the new project's name (`<name>-local`) and run
    `git init` there (not a fork of this repo — each project is its own
@@ -20,13 +42,14 @@ Base template for starting a new project on top of `freimguork-core` +
    - `config/dev/keys.php`, `config/prod/keys.php` (generate the secret with
      `php -r "echo bin2hex(random_bytes(32));"`, a **different** one per
      environment)
-   - `config/keys.php`, `config/mail.php` if the project needs them
+   - `config/mail.php` if the project needs it
 4. Create the database and import `db.sql` (Appacman's minimal schema +
    data - blocks, field types, profiles and permissions - with no admin
    user yet).
 5. `composer install` (also publishes Appacman/AdminLTE assets into
    `web/` via the `AssetPublisher` script).
 6. Set up the local vhost pointing `DocumentRoot` to `web/`.
+7. Create the repo on Bitbucket/GitHub, `git add`/`commit`/`remote add`/`push`.
 
 ## First admin user
 
@@ -69,14 +92,14 @@ the first user).
 - `config/` - per-environment credentials (`dev/`/`prod/`, gitignored +
   `.dist` committed) and `projects.php` (sub-project map: `wallaby` =
   Appacman, `{lang}` = public site)
-- `web/` - served document root (front controllers, `.htaccess`, static
-  assets, uploads)
+- `web/` - served document root (front controllers, `.htaccess`, `static/`
+  with a CSS reset and the bundled jQuery, `upload/`)
 - `src/Web/` - public site controllers/views (`Home`, `DefaultController`
   as an example)
-- `src/Appacman/` - extension point for Appacman overrides (custom forms,
-  etc.) - empty to start
 - `src/cache/` - compiled route cache in prod (gitignored, created
   automatically at runtime - not part of the tracked structure)
+- `locale/en_GB/LC_MESSAGES/` - minimal `.po` header only, no project-specific
+  msgids yet
 - `db.sql` - minimal Appacman schema, no admin user (see above)
 
 ## Not included yet
