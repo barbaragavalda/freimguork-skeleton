@@ -20,10 +20,11 @@ sh create-project.sh bitbucket tv-tracker tvtracker.com "TV Tracker" "Track what
 
 It creates the repo (Bitbucket or GitHub), the local host/vhost, copies this
 skeleton, fills in every placeholder, fetches the latest jQuery, generates
-DB credentials and encryption secrets, commits and pushes, creates the
-database, imports `db.sql` and runs `composer install`. The only thing it
-leaves manual is creating the first admin user (see below) - that needs a
-real password you choose, encrypted with the project's own generated secret.
+DB credentials and encryption secrets, commits and pushes, runs
+`composer install`, builds `db.sql` (via `build-db-sql.sh` - see below) and
+imports it into a freshly created database. The only thing it leaves manual
+is creating the first admin user (see below) - that needs a real password
+you choose, encrypted with the project's own generated secret.
 
 ## Manual steps (what the script does, for reference/recovery)
 
@@ -43,11 +44,18 @@ real password you choose, encrypted with the project's own generated secret.
      `php -r "echo bin2hex(random_bytes(32));"`, a **different** one per
      environment)
    - `config/mail.php` if the project needs it
-4. Create the database and import `db.sql` (Appacman's minimal schema +
-   data - blocks, field types, profiles and permissions - with no admin
-   user yet).
-5. `composer install` (also publishes Appacman/AdminLTE assets into
-   `web/` via the `AssetPublisher` script).
+4. `composer install` (also publishes Appacman/AdminLTE assets into
+   `web/` via the `AssetPublisher` script). Needs to happen before the next
+   step, since `db.sql` is assembled from the vendor packages it installs.
+5. Build `db.sql` with `system/scripts/build-db-sql.sh <slug>` (from the VM
+   repo) - concatenates `vendor/optisistem/freimguork-appacman/db.sql`
+   (Appacman's minimal schema: blocks, field types, profiles and
+   permissions, no admin user yet) with the `db.sql` of every `vendorApp`
+   declared in this project's `config/projects.php` that ships one (e.g.
+   `freimguork-webservice`'s `appacman_app_config`/push tables - skipped if
+   the project doesn't use it). Create the database, then import the
+   result. Re-run this script (and re-import) whenever a `vendorApp` is
+   added to an existing project.
 6. Set up the local vhost pointing `DocumentRoot` to `web/`.
 7. Create the repo on Bitbucket/GitHub, `git add`/`commit`/`remote add`/`push`.
 
@@ -100,7 +108,6 @@ the first user).
   automatically at runtime - not part of the tracked structure)
 - `locale/en_GB/LC_MESSAGES/` - minimal `.po` header only, no project-specific
   msgids yet
-- `db.sql` - minimal Appacman schema, no admin user (see above)
 
 ## Not included yet
 
