@@ -4,6 +4,13 @@ RewriteEngine On
 # Installation directory
 RewriteBase /
 
+# Some PHP-FPM/CGI setups (confirmed on Cdmon) never populate
+# HTTP_AUTHORIZATION at all, so WebserviceController::checkToken()'s
+# REDIRECT_HTTP_AUTHORIZATION fallback has nothing to fall back to either -
+# force Apache to re-expose the header it already parsed as an env var.
+RewriteCond %{HTTP:Authorization} ^(.*)
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%1]
+
 # Redirect www to non-www
 RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
 RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
